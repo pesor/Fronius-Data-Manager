@@ -248,8 +248,8 @@ See instructions under **Prerequisites**
 
 2.0.0 First official release
 2.0.1 Stop MQTT for updating when Fronius Inverter is off line at night.
-
 3.0.0 Changed from Arduino EDI, into VSCode and PlatformIO
+4.0.0 Using VSCode and PlatformIO to full extent.
 
 ### Authors
 
