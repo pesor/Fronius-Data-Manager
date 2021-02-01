@@ -77,12 +77,26 @@ void getFroniusJSONData()
   // check if there still is power on the Fronius converter.
   if (UDCstr.toInt() == 0 || doc["Body"]["Data"]["PAC"]["Value"].as<String>() == "null")
   {
-    Serial.println("ingen data fra Fronius");
-    Serial.println(buffer);
+    if (thisDay != lastDayInt.toInt())
+    {
+      lastDayInt = String(thisDay);
+      writeFile(SPIFFS, "/lastDay.txt", lastDayInt.c_str());
+    }
+    if (thisHour == 23)
+    {
+      if (thisMinute == 59)
+      {
+        if (thisSecond > 39)
+        {
+          Serial.println("ingen data fra Fronius");
+          Serial.println(buffer);
+#include <ftp-buffer.h>
+        }
+      }
+    }
   }
   else
   {
-
     Serial.println(F("Connected to Fronius Datamanager 4"));
     // Allocate a  JsonDocument
     StaticJsonDocument<1792> docSend;
@@ -238,26 +252,5 @@ void getFroniusJSONData()
     mqttClient.disconnect();
     Serial.println(F("Connected to Fronius Datamanager 13"));
     Serial.println(" ");
-
-    if (thisDay != lastDayInt.toInt())
-    {
-#include <day-change.h>
-    }
   }
-  /*
-  Serial.println("Sådan ser buffer ud: ");
-  Serial.println(buffer);
-  Serial.println(" ");
-
-  DeserializationError errorbuf = deserializeJson(docSave, buffer);
-  if (errorbuf)
-  {
-    Serial.print(F("Day deserializeJson() buffer failed: "));
-    Serial.println(error.c_str());
-    goToDeepSleepFiveMinutes();
-  }
-  else {
-    Serial.println("Deserialize success");
-  }
-  */
 }

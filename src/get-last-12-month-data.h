@@ -1,4 +1,5 @@
-void getLast12monthsData() {
+void getLast12monthsData()
+{
   // Get the last 12 months data, excl current month, which is not included.
   readString = "";
   readFile(SPIFFS, "/last12.txt");
@@ -9,7 +10,8 @@ void getLast12monthsData() {
 
   // Parse JSON object
   DeserializationError errorL12 = deserializeJson(last12Recv, readString);
-  if (errorL12) {
+  if (errorL12)
+  {
     Serial.print(F("deserializeJson() Last 12 Recv failed: "));
     Serial.println(errorL12.c_str());
     goToDeepSleepFiveMinutes();
@@ -29,10 +31,15 @@ void getLast12monthsData() {
   twelveLast[12] = last12Recv["last12"]["Dec"].as<float>();
   //  twelveLast[13] = last12Recv["LastTwelve"].as<float>();
 
-  for (int i = 1; i < 13; i++) {
+  twelveLast[0] = 0;
+  twelveLast[13] = 0;
+  twelveLastTotal = 0;
+  for (int i = 1; i < 13; i++)
+  {
     twelveLastTotal += twelveLast[i];
     Serial.print("twelveLast(i)");
     Serial.println(twelveLast[i]);
   }
+      twelveLast[13] = twelveLastTotal;
 }
 // END getLast12monthsData()

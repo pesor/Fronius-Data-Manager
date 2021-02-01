@@ -3,15 +3,20 @@
 // START userdefined data
 // *******************************************************************************************************************************
 
+// Turn logging on/off - turn read logfile on/off, turn delete logfile on/off ---> default is false for all 3, otherwise it can cause battery drainage.
+const bool  logging =  true;
+const bool  readLogfile = false;
+const bool  deleteLogfile = true;
+
 // Initiate FLAG, Set to true, when you want to initiate all the history variables, See Readme.md
-bool initiate = true;
+bool initiate = false;
 
 // Network constants
 // define your SSID's, and remember to fill out variable ssidArrNo with the number of your SSID's
 String ssidArr[] = {"Enterprise", "Enterprise_EXT", "Enterprise_EXTN", "Enterprise-pro"};
 int ssidArrNo = 4;
 const char* ssid = "Enterprise_EXT";
-const char* password = "gp44pnh6";
+const char* password = "Password";
 
 
 // Date and time syncronize
@@ -23,7 +28,7 @@ const long  gmtOffset_sec = 3600;
 // FTP constants   
 char ftp_server[] = "192.168.1.64";
 char ftp_user[]   = "admin";
-char ftp_pass[]   = "per2303anette1009rene1907";
+char ftp_pass[]   = "Password";
 
 
 // mqtt constants

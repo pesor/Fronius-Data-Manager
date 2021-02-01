@@ -15,6 +15,13 @@ else
   {
     Serial.print(F("Month deserializeJson() buffer failed: "));
     Serial.println(error.c_str());
+    if (logging)
+    {
+      String logInfo = formattedDate + " deserializeJson buffer failed - sleep 5 minutes: \n" + String(buffer) + " \n";
+      const char *logInfo_write = logInfo.c_str();
+      writeFile(SPIFFS, "/error.log", logInfo_write);
+    }
+
     goToDeepSleepFiveMinutes();
   }
   else
@@ -74,13 +81,28 @@ else
     // Are we after SunSet
     if (lastDayOfMonth)
     {
+      if (logging)
+      {
+        String logInfo = formattedDate + " We are in day of last month: \n";
+        const char *logInfo_write = logInfo.c_str();
+        writeFile(SPIFFS, "/error.log", logInfo_write);
+      }
       if (thisHourInMonth == sunset_hour)
       {
         Serial.println("sunset hour");
         Serial.println(sunset_hour);
 
         Serial.println("Month is changing");
-        #include <day-change.h>
+        if (logging)
+        {
+          String logInfo = formattedDate + " We are in sunset hour of last day of month: \n";
+          const char *logInfo_write = logInfo.c_str();
+          writeFile(SPIFFS, "/error.log", logInfo_write);
+        }
+        lastDayInt = String(thisDay);
+        writeFile(SPIFFS, "/lastDay.txt", lastDayInt.c_str());
+
+#include <ftp-buffer.h>
         getFTPmessage();
         // Set the values in the document from the last saved read.
         // Device changes according to device placement
@@ -107,14 +129,29 @@ else
         // we need to move this month energy to the appropiate lastTwelve variable
         int lastMonthIntInt = lastMonthInt.toInt();
         twelveLast[lastMonthIntInt] = yearEnergy - yearToLastMonthEnergy - correctManualStart + (producedNow / 1000);
+        if (logging)
+        {
+          String logInfo = formattedDate + " Sidste måneds produktion: " + String(twelveLast[lastMonthIntInt]) + " \n";
+          const char *logInfo_write = logInfo.c_str();
+          writeFile(SPIFFS, "/error.log", logInfo_write);
+        }
         Serial.print("Sidste måneds forbrug");
         Serial.println(twelveLast[lastMonthIntInt]);
         // update the yearToLastMonthEnergy to yearEnergy
         yearToLastMonthEnergy = yearEnergy - correctManualStart + (producedNow / 1000);
-        Serial.print("Forbrug til månedsskivt");
-        Serial.println(yearEnergy);
+        if (logging)
+        {
+          String logInfo = formattedDate + " Energi til sidste måned: " + String(yearToLastMonthEnergy) + " \n" +
+                           formattedDate + " beregnet således: yearEnergy " + yearEnergy + " correktion " + correctManualStart +
+                           " produceret i dag " + producedNow / 1000 + "\n";
+          const char *logInfo_write = logInfo.c_str();
+          writeFile(SPIFFS, "/error.log", logInfo_write);
+        }
+        Serial.print("Forbrug til månedsskift");
+        Serial.println(yearToLastMonthEnergy);
         writeFile(SPIFFS, "/yearToLastMonthEnergy.txt", String(yearToLastMonthEnergy).c_str());
         float twelveLastTotalLocal = 0;
+
         for (int i = 1; i < 13; i++)
         {
           twelveLastTotalLocal += twelveLast[i];
@@ -165,12 +202,20 @@ else
         // END END END END END
 
         // We need to set the variables right.
+
         thisMonthsEnergy = 0;
 
         now["MONTH_ENERGY"] = String(thisMonthsEnergy);
 
         // Here we need to go to sleep until sunrise, so the values do not screw up
         int secondsToSunRise = (24 - sunset_hour + sunrise_hour) * 60 * 60;
+        if (logging)
+        {
+          String logInfo = formattedDate + " Going to Sleep for: " + String(secondsToSunRise) + " until dawn. \n";
+          const char *logInfo_write = logInfo.c_str();
+          writeFile(SPIFFS, "/error.log", logInfo_write);
+        }
+
         Serial.print("Going to sleep... ");
         Serial.print(secondsToSunRise);
         Serial.println(" sekunder");

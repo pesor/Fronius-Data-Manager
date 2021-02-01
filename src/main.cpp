@@ -46,6 +46,10 @@ String dayStamp;
 int yearStamp;
 String timeStamp;
 String timeStamp1; // maybe not used
+int thisHour;
+int thisMinute;
+int thisSecond;
+
 int thisDay;
 int sunset_hour;
 int sunrise_hour;
@@ -113,6 +117,16 @@ void setup()
   Serial.print("Release version: ");
   Serial.println(rel);
 
+  // Mount file system
+  if (!SPIFFS.begin(true))
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    goToDeepSleepFiveMinutes();
+  }
+  listDir(SPIFFS, "/", 0);
+
+#include <logging.h>
+
   // Start WiFi and update time
   connectToNetwork();
   Serial.println(" ");
@@ -122,14 +136,6 @@ void setup()
   rssi = WiFi.RSSI();
   Serial.print("RSSI: ");
   Serial.println(rssi);
-
-  // Mount file system
-  if (!SPIFFS.begin(true))
-  {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    goToDeepSleepFiveMinutes();
-  }
-  listDir(SPIFFS, "/", 0);
 
   // Initiate historic variables, at first start of program, or if adjustments are needed.
   if (initiate)
@@ -179,26 +185,20 @@ void loop()
 #include <time-manager.h>
 
   // Get the push data json containing the produced today data, from your ftp server.
-  // We only get this info once per hour, from the Fronius Data manager.
-
-  // Get the data if time is either one minute past the hour, or this is the first run of the program
-  if (thisMinute == 01 or firstRun == true)
-  {
-    getFTPmessage();
-  }
+  getFTPmessage();
 
   // We need the data from the last years production
   getLastYearsData();
 
   // We need the data from the last 12 months.
   getLast12monthsData();
-  Serial.print("M1 check twelve last: ");
-  Serial.println(twelveLast[1]);
+  Serial.print("Total twelve last months: ");
+  Serial.println(twelveLast[13]);
 
   // We need the data from the Fronius Data Manager
   getFroniusJSONData();
-  Serial.print("M2 check twelve last: ");
-  Serial.println(twelveLast[1]);
+  Serial.print("End - Total twelve last months: ");
+  Serial.println(twelveLast[13]);
 
   // Wait 20 seconds
   delay(20000);
