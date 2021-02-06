@@ -200,6 +200,6 @@ void loop()
   Serial.print("End - Total twelve last months: ");
   Serial.println(twelveLast[13]);
 
-  // Wait 20 seconds
-  delay(20000);
+  // Wait 10 seconds
+  delay(10000);
 }
