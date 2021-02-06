@@ -73,6 +73,19 @@ void getFroniusJSONData()
   // #############################################################################################
   // Are we sending data to MQTT, we do not do this after sunset, or if UDC = 0
   // #############################################################################################
+  if (thisHour == 23)
+  {
+    if (thisMinute == 59)
+    {
+      if (thisSecond > 39)
+      {
+        Serial.println("ingen data fra Fronius");
+        Serial.println(buffer);
+#include <ftp-buffer.h>
+      }
+    }
+  }
+
   String UDCstr = doc["Body"]["Data"]["UDC"]["Value"].as<String>();
   // check if there still is power on the Fronius converter.
   if (UDCstr.toInt() == 0 || doc["Body"]["Data"]["PAC"]["Value"].as<String>() == "null")
@@ -81,18 +94,6 @@ void getFroniusJSONData()
     {
       lastDayInt = String(thisDay);
       writeFile(SPIFFS, "/lastDay.txt", lastDayInt.c_str());
-    }
-    if (thisHour == 23)
-    {
-      if (thisMinute == 59)
-      {
-        if (thisSecond > 39)
-        {
-          Serial.println("ingen data fra Fronius");
-          Serial.println(buffer);
-#include <ftp-buffer.h>
-        }
-      }
     }
   }
   else
